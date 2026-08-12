@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>空間工作｜A/B/C/D 報告工作區 v0.3</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--line:#d9dee5;--text:#182230;--muted:#667085;--blue:#2563eb;--soft:#eff6ff;--green:#087f5b;--red:#b42318;--shadow:0 8px 28px rgba(16,24,40,.07)}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
+.wrap{max-width:1480px;margin:auto;padding:22px} header{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:16px}
+h1{font-size:27px;margin:0 0 7px}.muted{color:var(--muted);font-size:13px;line-height:1.6}.pill{border:1px solid #bfd4ff;background:#eef5ff;color:#194185;padding:7px 11px;border-radius:999px;font-size:12px}
+.panel,.zone{background:var(--card);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow)}.panel{padding:16px;margin-bottom:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+label{font-size:12px;font-weight:800;display:block;margin-bottom:6px}input[type=text],select,textarea{width:100%;border:1px solid #cbd2da;border-radius:9px;padding:10px 11px;font:inherit;background:#fff}
+textarea{min-height:83px;resize:vertical}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button,a.btn{border-radius:9px;padding:9px 12px;font:inherit;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+button{border:0}.primary{background:var(--blue);color:#fff}.secondary,a.btn{background:#fff;color:var(--text);border:1px solid var(--line)}.bluebtn{background:var(--soft);color:#194185;border:1px solid #bed2ff}.danger{background:#fff;color:var(--red);border:1px solid #f0c7c2}
+.banner{background:#ecfdf3;border:1px solid #abefc6;color:#05603a;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.6}
+.warn{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.6}
+.zones{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.zone{overflow:hidden}.zonehead{padding:13px 14px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center}
+.letter{width:40px;height:40px;background:#111827;color:#fff;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900}.zhbody{flex:1}.ztitle{font-weight:900;font-size:15px}.count{font-weight:600;color:var(--muted);font-size:12px}
+.role{margin-top:6px}.drop{margin:13px;border:2px dashed #c9d1db;border-radius:12px;min-height:128px;padding:13px;text-align:center;display:flex;align-items:center;justify-content:center;background:#fbfcfd}.drop.drag{border-color:var(--blue);background:var(--soft)}
+.drop strong{display:block;margin-bottom:5px}.drop span{font-size:12px;color:var(--muted)}.tools{padding:0 13px 10px;display:flex;gap:7px;flex-wrap:wrap}.items{padding:0 13px 13px;display:grid;gap:7px;max-height:330px;overflow:auto}
+.item{border:1px solid var(--line);border-radius:9px;padding:9px 10px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:#fff}.item.local{border-left:4px solid #667085}.item.drive{border-left:4px solid var(--blue)}
+.name{font-size:13px;font-weight:850;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.meta{font-size:11px;color:var(--muted);margin-top:2px}.rm{border:0;background:transparent;color:var(--red);padding:2px 5px;font-size:17px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fbfcfd}.stat b{display:block;font-size:18px}.stat span{font-size:11px;color:var(--muted)}
+.output{white-space:pre-wrap;background:#0b1220;color:#d6e6ff;border-radius:11px;padding:13px;min-height:150px;max-height:330px;overflow:auto;font:12.5px/1.55 ui-monospace,Consolas,monospace}
+.small{font-size:12px;color:var(--muted)}.check{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);margin-top:8px}
+.dialog{position:fixed;inset:0;background:rgba(15,23,42,.38);display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.dialog.show{display:flex}.modal{width:min(720px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:14px;padding:17px;box-shadow:0 25px 80px rgba(0,0,0,.22)}.modal h3{margin:0 0 12px}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+footer{font-size:11px;color:var(--muted);padding:8px 2px 24px;line-height:1.7}@media(max-width:900px){.grid3,.grid2,.zones,.stats{grid-template-columns:1fr}header{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><h1>空間工作｜A/B/C/D 報告工作區</h1><div class="muted">v0.3｜網站程式不內建任何私人 Drive ID；案件連結只儲存在你的瀏覽器。</div></div>
+  <div class="row"><div class="pill">不設定人為檔案數量／容量上限</div><button class="secondary" id="openSettings">⚙ 網站設定</button></div>
+</header>
+
+<section class="panel">
+  <div class="banner"><b>設計原則：</b>Google Drive 是主要檔案倉庫；網頁只管理案件、A/B/C/D 分類、任務索引與交接。網站原始碼不保存你的案件 Drive 連結。</div>
+  <div id="configWarning" class="warn" style="display:none;margin-top:10px"><b>尚未設定案件 Drive。</b>先按右上角「網站設定」，把專案根目錄、保命符與案件資料夾連結貼入一次；之後會保存在這台瀏覽器。</div>
+  <div style="height:12px"></div>
+  <div class="grid3">
+    <div><label>案件</label><select id="case"></select></div>
+    <div><label>任務名稱</label><input id="task" type="text" placeholder="例如：115年7月月報更新"></div>
+    <div><label>快捷入口</label><div class="row">
+      <a id="caseLink" class="btn" target="_blank" rel="noopener">案件 Drive</a>
+      <a id="rootLink" class="btn" target="_blank" rel="noopener">專案根目錄</a>
+      <a id="lifelineLink" class="btn" target="_blank" rel="noopener">保命符</a>
+    </div></div>
+  </div>
+  <div style="height:12px"></div>
+  <div class="grid3">
+    <div><label>更新範圍</label><textarea id="scope" placeholder="章節、表格、照片、數值、月份等"></textarea></div>
+    <div><label>特殊要求</label><textarea id="special" placeholder="例如：保持原版面、照片沿用原大小、交通章不更新"></textarea></div>
+    <div><label>工作原則</label>
+      <div class="check"><input id="preserve" type="checkbox" checked>保持原格式、版面、字型、表格與圖片配置</div>
+      <div class="check"><input id="verify" type="checkbox" checked>完成後交叉檢查數值、日期、照片、圖表、單位、頁碼與舊期別</div>
+      <div class="check"><input id="preferDrive" type="checkbox" checked>大量檔案優先以 Drive 連結方式加入</div>
+    </div>
+  </div>
+</section>
+
+<section class="panel"><div class="stats">
+  <div class="stat"><b id="totalCount">0</b><span>總項目數</span></div><div class="stat"><b id="driveCount">0</b><span>Drive 連結</span></div>
+  <div class="stat"><b id="localCount">0</b><span>本機暫存檔</span></div><div class="stat"><b id="localSize">0 B</b><span>本機暫存總大小</span></div>
+</div></section>
+
+<section class="zones" id="zones"></section>
+
+<section class="panel" style="margin-top:16px">
+  <div class="row" style="justify-content:space-between"><div><b>任務包／工作索引</b><div class="small">Drive 來源保留連結；本機檔只保存名稱、大小與類型，不把檔案內容寫入 JSON。</div></div>
+  <div class="row"><button class="secondary" id="generate">產生任務包</button><button class="secondary" id="copy">複製</button><button class="primary" id="download">下載 JSON</button>
+  <label class="secondary" style="padding:9px 12px;border:1px solid var(--line);border-radius:9px;cursor:pointer;margin:0">載入 JSON<input id="loadJson" type="file" accept=".json,application/json" hidden></label>
+  <button class="danger" id="clear">清空</button></div></div>
+  <div style="height:11px"></div><div id="output" class="output">尚未產生任務包。</div>
+</section>
+
+<footer>v0.3｜私人案件連結僅保存在瀏覽器 localStorage；公開網站原始碼不包含專案 Drive ID。</footer>
+</div>
+
+<div class="dialog" id="driveDialog"><div class="modal">
+  <h3>新增 Google Drive 檔案／資料夾</h3>
+  <div class="grid2"><div><label>顯示名稱</label><input id="driveName" type="text" placeholder="例如：115年7月監測成果"></div>
+  <div><label>類型</label><select id="driveType"><option value="file">Drive 檔案</option><option value="folder">Drive 資料夾</option></select></div></div>
+  <div style="height:10px"></div><label>Google Drive 網址</label><input id="driveUrl" type="text" placeholder="https://drive.google.com/... 或 https://docs.google.com/...">
+  <div class="small" style="margin-top:7px">大量照片可直接貼整個 Drive 資料夾，不需要逐張加入。</div>
+  <div class="actions"><button class="secondary" id="cancelDrive">取消</button><button class="primary" id="saveDrive">加入</button></div>
+</div></div>
+
+<div class="dialog" id="settingsDialog"><div class="modal">
+  <h3>網站設定｜只存在你的瀏覽器</h3>
+  <div class="small" style="margin-bottom:12px">這些連結不會寫入網站程式碼。清除瀏覽器網站資料後需重新貼入。</div>
+  <label>專案根目錄</label><input id="cfgRoot" type="text" placeholder="https://drive.google.com/drive/folders/...">
+  <div style="height:9px"></div><label>正式保命符</label><input id="cfgLifeline" type="text" placeholder="https://drive.google.com/file/d/.../view">
+  <div style="height:12px"></div><div class="grid2">
+    <div><label>01 台東</label><input id="cfgTaitung" type="text" placeholder="Drive 資料夾網址"></div>
+    <div><label>02 三鶯</label><input id="cfgSanying" type="text" placeholder="Drive 資料夾網址"></div>
+    <div><label>03 ASML</label><input id="cfgAsml" type="text" placeholder="Drive 資料夾網址"></div>
+    <div><label>04 大安中山</label><input id="cfgDaan" type="text" placeholder="Drive 資料夾網址"></div>
+    <div><label>特殊工作</label><input id="cfgSpecial" type="text" placeholder="Drive 資料夾網址"></div>
+  </div>
+  <div class="actions"><button class="danger" id="clearConfig">清除設定</button><button class="secondary" id="cancelSettings">取消</button><button class="primary" id="saveSettings">儲存設定</button></div>
+</div></div>
+
+<script>
+const CASE_NAMES={taitung:"01台東",sanying:"02三鶯",asml:"03ASML",daan:"04大安中山",special:"特殊工作"};
+const DEFAULT_ROLES={A:"主要作業檔／前期報告／要被更新的目標檔",B:"範例／格式來源／比較資料／照片來源",C:"本期正式資料／最新監測成果／更新來源",D:"更新完成後的成果檔"};
+const state={A:[],B:[],C:[],D:[]};let driveTarget=null;
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function human(n){if(!n)return"0 B";if(n<1024)return n+" B";if(n<1048576)return(n/1024).toFixed(1)+" KB";if(n<1073741824)return(n/1048576).toFixed(1)+" MB";return(n/1073741824).toFixed(2)+" GB"}
+function uid(){return crypto?.randomUUID?.()||Date.now()+"_"+Math.random().toString(36).slice(2)}
+function validDrive(u){return !u||/^https:\/\/(drive|docs)\.google\.com\//i.test(u.trim())}
+function config(){try{return JSON.parse(localStorage.getItem("spacework_config_v03")||"{}")}catch{return{}}}
+function saveConfigObj(c){localStorage.setItem("spacework_config_v03",JSON.stringify(c))}
+function caseUrl(key){return config().cases?.[key]||""}
+function initCases(){const s=document.getElementById("case");Object.entries(CASE_NAMES).forEach(([k,v])=>{const o=document.createElement("option");o.value=k;o.textContent=v;s.appendChild(o)});s.onchange=()=>{syncLinks();saveForm()}}
+function setLink(id,url){const a=document.getElementById(id);a.href=url||"#";a.style.opacity=url?"1":".45";a.onclick=url?null:(e=>{e.preventDefault();openSettings()})}
+function syncLinks(){const c=config(),k=document.getElementById("case").value;setLink("caseLink",c.cases?.[k]);setLink("rootLink",c.root);setLink("lifelineLink",c.lifeline);document.getElementById("configWarning").style.display=(c.root&&c.lifeline&&c.cases?.[k])?"none":"block"}
+function buildZones(){const host=document.getElementById("zones");host.innerHTML="";["A","B","C","D"].forEach(z=>{const el=document.createElement("section");el.className="zone";el.innerHTML=`
+<div class="zonehead"><div class="letter">${z}</div><div class="zhbody"><div class="ztitle">${z} 類資料 <span class="count" id="cnt${z}"></span></div><div class="role"><input id="role${z}" type="text" value="${esc(DEFAULT_ROLES[z])}"></div></div></div>
+<div class="drop" data-zone="${z}"><div><strong>拖放本機檔案到 ${z}</strong><span>大量資料請用下方「加入 Drive 連結」。</span></div><input data-file="${z}" type="file" multiple hidden></div>
+<div class="tools"><button class="bluebtn" data-drive="${z}">＋ 加入 Drive 連結</button><button class="secondary" data-open="${z}">打開案件 Drive</button></div><div class="items" id="items${z}"></div>`;host.appendChild(el)});
+document.querySelectorAll(".drop").forEach(d=>{const z=d.dataset.zone;d.onclick=()=>document.querySelector(`[data-file="${z}"]`).click();["dragenter","dragover"].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.add("drag")}));["dragleave","drop"].forEach(ev=>d.addEventListener(ev,e=>{e.preventDefault();d.classList.remove("drag")}));d.addEventListener("drop",e=>{const move=e.dataTransfer.getData("application/x-spacework");if(move){const[from,id]=move.split("|");moveItem(from,z,id);return}addLocal(z,e.dataTransfer.files)})});
+document.querySelectorAll("[data-file]").forEach(i=>i.onchange=e=>{addLocal(i.dataset.file,e.target.files);i.value=""});document.querySelectorAll("[data-drive]").forEach(b=>b.onclick=()=>openDriveModal(b.dataset.drive));document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{const u=caseUrl(document.getElementById("case").value);u?window.open(u,"_blank"):openSettings()});["A","B","C","D"].forEach(z=>document.getElementById("role"+z).onchange=saveForm);restoreForm();render()}
+function addLocal(z,files){[...files].forEach(f=>state[z].push({id:uid(),kind:"local",name:f.name,size:f.size,type:f.type||"",lastModified:f.lastModified}));render()}
+function openDriveModal(z){driveTarget=z;driveName.value="";driveUrl.value="";driveDialog.classList.add("show")}function closeDriveModal(){driveDialog.classList.remove("show");driveTarget=null}
+cancelDrive.onclick=closeDriveModal;saveDrive.onclick=()=>{const name=driveName.value.trim(),url=driveUrl.value.trim();if(!validDrive(url)||!url){alert("請貼入有效的 Google Drive／Docs／Sheets／Slides 網址。");return}state[driveTarget].push({id:uid(),kind:"drive",driveType:driveType.value,name:name||url,url});render();closeDriveModal()}
+function moveItem(from,to,id){if(from===to)return;const i=state[from].findIndex(x=>x.id===id);if(i>=0){state[to].push(state[from].splice(i,1)[0]);render()}}
+function render(){let total=0,dc=0,lc=0,ls=0;["A","B","C","D"].forEach(z=>{const host=document.getElementById("items"+z);host.innerHTML="";document.getElementById("cnt"+z).textContent=state[z].length?`(${state[z].length})`:"";state[z].forEach(item=>{total++;item.kind==="drive"?dc++:(lc++,ls+=item.size||0);const e=document.createElement("div");e.className="item "+item.kind;e.draggable=true;e.ondragstart=ev=>ev.dataTransfer.setData("application/x-spacework",z+"|"+item.id);e.innerHTML=`<div><div class="name">${item.kind==="drive"?"☁ ":""}${esc(item.name)}</div><div class="meta">${item.kind==="drive"?(item.driveType==="folder"?"Drive 資料夾":"Drive 檔案"):`本機暫存｜${esc(item.type||"未知類型")}｜${human(item.size)}`}</div></div><div class="row"></div>`;const a=e.querySelector(".row");if(item.kind==="drive"){const x=document.createElement("a");x.className="btn";x.target="_blank";x.rel="noopener";x.href=item.url;x.textContent="開啟";a.appendChild(x)}const rm=document.createElement("button");rm.className="rm";rm.textContent="×";rm.onclick=()=>{state[z]=state[z].filter(x=>x.id!==item.id);render()};a.appendChild(rm);host.appendChild(e)})});totalCount.textContent=total;driveCount.textContent=dc;localCount.textContent=lc;localSize.textContent=human(ls)}
+function pack(){const k=case.value,c=config();return{version:"0.3",project:"空間工作",case:CASE_NAMES[k],caseDrive:c.cases?.[k]||null,taskName:task.value.trim(),scope:scope.value.trim(),specialRequirements:special.value.trim(),settings:{preserveOriginalFormat:preserve.checked,crossCheckAfterUpdate:verify.checked,preferDriveForLargeData:preferDrive.checked,artificialFileCountLimit:null,artificialCapacityLimit:null},roles:Object.fromEntries(["A","B","C","D"].map(z=>[z,document.getElementById("role"+z).value.trim()])),sources:Object.fromEntries(["A","B","C","D"].map(z=>[z,state[z].map(x=>({...x}))])),rootDrive:c.root||null,lifeline:c.lifeline||null,generatedAt:new Date().toISOString()}}
+function generate(){const p=pack();output.textContent=JSON.stringify(p,null,2);saveForm();return p}
+function saveForm(){localStorage.setItem("spacework_form_v03",JSON.stringify({case:case.value,task:task.value,scope:scope.value,special:special.value,preserve:preserve.checked,verify:verify.checked,preferDrive:preferDrive.checked,roles:Object.fromEntries(["A","B","C","D"].map(z=>[z,document.getElementById("role"+z)?.value||DEFAULT_ROLES[z]]))}))}
+function restoreForm(){let o={};try{o=JSON.parse(localStorage.getItem("spacework_form_v03")||"{}")}catch{}if(o.case&&CASE_NAMES[o.case])case.value=o.case;["task","scope","special"].forEach(k=>{if(o[k]!=null)document.getElementById(k).value=o[k]});if(typeof o.preserve==="boolean")preserve.checked=o.preserve;if(typeof o.verify==="boolean")verify.checked=o.verify;if(typeof o.preferDrive==="boolean")preferDrive.checked=o.preferDrive;["A","B","C","D"].forEach(z=>{if(o.roles?.[z])document.getElementById("role"+z).value=o.roles[z]});syncLinks()}
+function openSettings(){const c=config();cfgRoot.value=c.root||"";cfgLifeline.value=c.lifeline||"";cfgTaitung.value=c.cases?.taitung||"";cfgSanying.value=c.cases?.sanying||"";cfgAsml.value=c.cases?.asml||"";cfgDaan.value=c.cases?.daan||"";cfgSpecial.value=c.cases?.special||"";settingsDialog.classList.add("show")}
+openSettings.onclick=openSettings;cancelSettings.onclick=()=>settingsDialog.classList.remove("show");saveSettings.onclick=()=>{const c={root:cfgRoot.value.trim(),lifeline:cfgLifeline.value.trim(),cases:{taitung:cfgTaitung.value.trim(),sanying:cfgSanying.value.trim(),asml:cfgAsml.value.trim(),daan:cfgDaan.value.trim(),special:cfgSpecial.value.trim()}};const bad=[c.root,c.lifeline,...Object.values(c.cases)].filter(x=>x&&!validDrive(x));if(bad.length){alert("有設定不是 Google Drive／Docs 網址，請檢查。");return}saveConfigObj(c);settingsDialog.classList.remove("show");syncLinks()};clearConfig.onclick=()=>{if(confirm("確定清除這台瀏覽器保存的所有案件連結？")){localStorage.removeItem("spacework_config_v03");settingsDialog.classList.remove("show");syncLinks()}}
+["task","scope","special","preserve","verify","preferDrive"].forEach(id=>document.getElementById(id).onchange=saveForm);generate.onclick=generate;copy.onclick=async()=>{generate();try{await navigator.clipboard.writeText(output.textContent);alert("已複製")}catch{alert("請手動選取複製。")}};download.onclick=()=>{const p=generate(),b=new Blob([JSON.stringify(p,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=(p.case+"_"+(p.taskName||"任務包")).replace(/[\\/:*?"<>|]/g,"_")+".json";a.click();URL.revokeObjectURL(a.href)}
+loadJson.onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const p=JSON.parse(await f.text()),key=Object.entries(CASE_NAMES).find(([,v])=>v===p.case)?.[0];if(key)case.value=key;task.value=p.taskName||"";scope.value=p.scope||"";special.value=p.specialRequirements||"";["A","B","C","D"].forEach(z=>{document.getElementById("role"+z).value=p.roles?.[z]||DEFAULT_ROLES[z];state[z]=(p.sources?.[z]||[]).map(x=>({...x,id:x.id||uid()}))});render();syncLinks();generate()}catch(err){alert("JSON 無法讀取："+err.message)}e.target.value=""}
+clear.onclick=()=>{if(!confirm("確定清空目前工作區？"))return;["A","B","C","D"].forEach(z=>state[z]=[]);task.value="";scope.value="";special.value="";output.textContent="尚未產生任務包。";localStorage.removeItem("spacework_form_v03");["A","B","C","D"].forEach(z=>document.getElementById("role"+z).value=DEFAULT_ROLES[z]);render()}
+initCases();buildZones();syncLinks();
+</script>
+</body>
+</html>
