@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>空間工作｜A/B/C/D 報告工作區 v0.5</title>
+<title>空間工作｜A/B/C/D 報告工作區 v0.6</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--line:#d9dee5;--text:#182230;--muted:#667085;--blue:#2563eb;--soft:#eff6ff;--green:#087f5b;--red:#b42318;--shadow:0 8px 28px rgba(16,24,40,.07)}
 *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif}
@@ -34,13 +34,13 @@ footer{font-size:11px;color:var(--muted);padding:8px 2px 24px;line-height:1.7}
 <body>
 <div class="wrap">
 <header>
-  <div><h1>空間工作｜A/B/C/D 報告工作區</h1><div class="muted">v0.5｜簡化版：選案件、放 A/B/C/D、填更新範圍，就開始工作。</div></div>
+  <div><h1>空間工作｜A/B/C/D 報告工作區</h1><div class="muted">v0.6｜簡化版：選案件、放 A/B/C/D、填更新範圍，就開始工作。</div></div>
   <div class="row"><div class="pill">不設定人為檔案數量／容量上限</div><button class="secondary" id="openSettingsBtn">⚙ 網站設定</button></div>
 </header>
 
 <section class="panel">
   <div class="banner"><b>工作方式：</b>Google Drive 是主要檔案倉庫；網頁只負責案件與 A/B/C/D 分類。已移除「任務包／工作索引／JSON」功能。</div>
-  <div id="configWarning" class="warn hidden" style="margin-top:10px"><b>尚未設定目前案件 Drive。</b>可按右上角「網站設定」貼入常用 Drive 連結；也可以直接在 A/B/C/D 加入 Drive 檔案或資料夾。</div>
+  <div id="configWarning" class="warn hidden" style="margin-top:10px"><b>目前案件尚未設定 Drive。</b>可按右上角「網站設定」臨時覆寫。</div>
   <div style="height:12px"></div>
 
   <div class="grid3">
@@ -101,7 +101,7 @@ footer{font-size:11px;color:var(--muted);padding:8px 2px 24px;line-height:1.7}
   </div>
 </section>
 
-<footer>v0.5｜案件選擇：台東／三鶯線／ASML／大安中山／其他臨時案件。私人 Drive 連結只保存在瀏覽器 localStorage。</footer>
+<footer>v0.6｜案件選擇：台東／三鶯線／ASML／大安中山／其他臨時案件。常用專案 Drive 已預設完成；瀏覽器設定僅作覆寫。</footer>
 </div>
 
 <div class="dialog" id="driveDialog"><div class="modal">
@@ -118,7 +118,7 @@ footer{font-size:11px;color:var(--muted);padding:8px 2px 24px;line-height:1.7}
 
 <div class="dialog" id="settingsDialog"><div class="modal">
   <h3>網站設定｜只存在你的瀏覽器</h3>
-  <div class="small" style="margin-bottom:12px">這些連結不會寫入公開網站程式碼。清除瀏覽器網站資料後需重新貼入。</div>
+  <div class="small" style="margin-bottom:12px">專案常用 Drive 已設為預設值，換電腦或手機也可直接使用；此處只用於臨時覆寫。</div>
   <label for="cfgRoot">專案根目錄</label><input id="cfgRoot" type="text" placeholder="https://drive.google.com/drive/folders/...">
   <div style="height:9px"></div><label for="cfgLifeline">正式保命符</label><input id="cfgLifeline" type="text" placeholder="https://drive.google.com/file/d/.../view">
   <div style="height:12px"></div>
@@ -129,7 +129,7 @@ footer{font-size:11px;color:var(--muted);padding:8px 2px 24px;line-height:1.7}
     <div><label for="cfgDaan">大安中山</label><input id="cfgDaan" type="text" placeholder="Drive 資料夾網址"></div>
     <div><label for="cfgOther">其他臨時案件</label><input id="cfgOther" type="text" placeholder="臨時案件資料夾（可留空）"></div>
   </div>
-  <div class="actions"><button class="danger" id="clearConfigBtn">清除設定</button><button class="secondary" id="cancelSettingsBtn">取消</button><button class="primary" id="saveSettingsBtn">儲存設定</button></div>
+  <div class="actions"><button class="danger" id="clearConfigBtn">恢復專案預設</button><button class="secondary" id="cancelSettingsBtn">取消</button><button class="primary" id="saveSettingsBtn">儲存設定</button></div>
 </div></div>
 
 <script>
@@ -141,6 +141,17 @@ const CASE_NAMES={
   asml:"ASML",
   daan:"大安中山",
   other:"其他臨時案件"
+};
+const DEFAULT_CONFIG={
+  root:"https://drive.google.com/drive/folders/1BD5ZO4T5Z3DTeu7pQVAClGIXDle_jCXT",
+  lifeline:"https://drive.google.com/file/d/1kzVMDbCi1P5cb_FWkHqKNX4Zzapjz6V6/view",
+  cases:{
+    taitung:"https://drive.google.com/drive/folders/1EKkr0Lx8Ag4GXhXbqIhc3wh4r7ZC1p8Z",
+    sanying:"https://drive.google.com/drive/folders/1M12BYZbNPM5COHEhnYXL347o5f5Quo2u",
+    asml:"https://drive.google.com/drive/folders/1qY-4eFUVLImcXCWNjgIKy9-BUiWO98Yp",
+    daan:"https://drive.google.com/drive/folders/1T2rUFe1UGLeeZe6GF1PHmAoWt6TtKaJA",
+    other:"https://drive.google.com/drive/folders/1RI375iE68O56JsxsZ80zSQT-SGtB94wo"
+  }
 };
 const DEFAULT_ROLES = {
   A:"主要作業檔／前期報告／要被更新的目標檔",
@@ -156,8 +167,16 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",
 function human(n){if(!n)return"0 B";if(n<1024)return n+" B";if(n<1048576)return(n/1024).toFixed(1)+" KB";if(n<1073741824)return(n/1048576).toFixed(1)+" MB";return(n/1073741824).toFixed(2)+" GB"}
 function uid(){return crypto?.randomUUID?.() || Date.now()+"_"+Math.random().toString(36).slice(2)}
 function validDrive(u){return !u || /^https:\/\/(drive|docs)\.google\.com\//i.test(u.trim())}
-function loadConfig(){try{return JSON.parse(localStorage.getItem("spacework_config_v05")||"{}")}catch{return{}}}
-function saveConfig(c){localStorage.setItem("spacework_config_v05",JSON.stringify(c))}
+function loadConfig(){
+  let saved={};
+  try{saved=JSON.parse(localStorage.getItem("spacework_config_v06")||"{}")}catch{}
+  return {
+    root:saved.root||DEFAULT_CONFIG.root,
+    lifeline:saved.lifeline||DEFAULT_CONFIG.lifeline,
+    cases:{...DEFAULT_CONFIG.cases,...(saved.cases||{})}
+  };
+}
+function saveConfig(c){localStorage.setItem("spacework_config_v06",JSON.stringify(c))}
 function currentCaseKey(){return el("caseSelect").value}
 function currentCaseName(){const k=currentCaseKey();return k==="other" ? (el("otherCaseName").value.trim() || "其他臨時案件") : CASE_NAMES[k]}
 function currentCaseUrl(){return loadConfig().cases?.[currentCaseKey()] || ""}
@@ -263,10 +282,10 @@ function saveForm(){
     preserve:el("preserveCheck").checked,verify:el("verifyCheck").checked,preferDrive:el("preferDriveCheck").checked,
     roles:Object.fromEntries(["A","B","C","D"].map(z=>[z,el("role"+z)?.value||DEFAULT_ROLES[z]]))
   };
-  localStorage.setItem("spacework_form_v05",JSON.stringify(data));
+  localStorage.setItem("spacework_form_v06",JSON.stringify(data));
 }
 function restoreForm(){
-  let o={};try{o=JSON.parse(localStorage.getItem("spacework_form_v05")||"{}")}catch{}
+  let o={};try{o=JSON.parse(localStorage.getItem("spacework_form_v06")||"{}")}catch{}
   if(o.caseKey&&CASE_NAMES[o.caseKey])el("caseSelect").value=o.caseKey;
   if(o.otherCaseName!=null)el("otherCaseName").value=o.otherCaseName;
   if(o.scope!=null)el("scopeInput").value=o.scope;
@@ -299,8 +318,8 @@ el("saveSettingsBtn").onclick=()=>{
   saveConfig(c);closeSettings();syncCaseUI();
 };
 el("clearConfigBtn").onclick=()=>{
-  if(confirm("確定清除這台瀏覽器保存的 Drive 設定？")){
-    localStorage.removeItem("spacework_config_v05");closeSettings();syncCaseUI();
+  if(confirm("確定清除這台瀏覽器的覆寫設定，恢復專案預設 Drive 連結？")){
+    localStorage.removeItem("spacework_config_v06");closeSettings();syncCaseUI();
   }
 };
 el("cancelDriveBtn").onclick=closeDriveModal;
@@ -315,7 +334,7 @@ el("clearWorkspaceBtn").onclick=()=>{
   ["A","B","C","D"].forEach(z=>state[z]=[]);
   el("scopeInput").value="";el("specialInput").value="";
   ["A","B","C","D"].forEach(z=>el("role"+z).value=DEFAULT_ROLES[z]);
-  localStorage.removeItem("spacework_form_v05");
+  localStorage.removeItem("spacework_form_v06");
   render();saveForm();
 };
 
